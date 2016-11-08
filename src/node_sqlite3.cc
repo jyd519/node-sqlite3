@@ -12,7 +12,13 @@ using namespace node_sqlite3;
 
 namespace {
 
+#if defined(SQLITE_MODULE_BUILTIN)
+static void RegisterModule(Local<Object> target,
+                       Local<Value> unused,
+                       Local<Context> context) {
+#else
 NAN_MODULE_INIT(RegisterModule) {
+#endif  
     Nan::HandleScope scope;
 
     Database::Init(target);
@@ -102,4 +108,8 @@ const char* sqlite_authorizer_string(int type) {
     }
 }
 
+#if defined(SQLITE_MODULE_BUILTIN)
+NODE_MODULE_CONTEXT_AWARE_BUILTIN(sqlite3, RegisterModule)
+#else
 NODE_MODULE(node_sqlite3, RegisterModule)
+#endif
